@@ -9,6 +9,9 @@
   "author": "TAG School PTA",
   "license": "MIT",
   "dependencies": {
-    "lodash": "~4.17.4"
+    "@google-cloud/datastore": "^1.3.3",
+    "airtable": "~0.5.1",
+    "lodash": "~4.17.4",
+    "mailchimp": "~1.2.0"
   }
 }
