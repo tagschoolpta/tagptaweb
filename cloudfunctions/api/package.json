@@ -1,0 +1,14 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "description": "API calls from the web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TAG School PTA",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "~4.17.4"
+  }
+}

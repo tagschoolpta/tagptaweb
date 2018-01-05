@@ -1,0 +1,14 @@
+{
+  "name": "workers",
+  "version": "0.0.1",
+  "description": "Worker Functions for background data sync",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TAG School PTA",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "~4.17.4"
+  }
+}
