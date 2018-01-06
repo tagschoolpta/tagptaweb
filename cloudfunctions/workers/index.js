@@ -7,28 +7,33 @@ const credentials = {
 function buildAndAuthorizeService(callback) {
   // Imports the Google APIs client library
   const google = require('googleapis');
-
-  // Acquires credentials
-  google.auth.getApplicationDefault((err, authClient) => {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    if (authClient.createScopedRequired && authClient.createScopedRequired()) {
-      authClient = authClient.createScoped([
-        'https://www.googleapis.com/auth/cloud-platform'
-      ]);
-    }
-
-    // Instantiates an authorized client
-    const cloudkms = google.cloudkms({
-      version: 'v1',
-      auth: authClient
-    });
-
-    callback(null, cloudkms);
+  const cloudkms = google.cloudkms({
+    version: 'v1',
+    auth: authClient
   });
+
+  callback(null, cloudkms);
+  // // Acquires credentials
+  // google.auth.getApplicationDefault((err, authClient) => {
+  //   if (err) {
+  //     callback(err);
+  //     return;
+  //   }
+
+  //   if (authClient.createScopedRequired && authClient.createScopedRequired()) {
+  //     authClient = authClient.createScoped([
+  //       'https://www.googleapis.com/auth/cloud-platform'
+  //     ]);
+  //   }
+
+  //   // Instantiates an authorized client
+  //   const cloudkms = google.cloudkms({
+  //     version: 'v1',
+  //     auth: authClient
+  //   });
+
+  //   callback(null, cloudkms);
+  // });
 }
 
 /**
