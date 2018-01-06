@@ -8,8 +8,7 @@ function buildAndAuthorizeService(callback) {
   // Imports the Google APIs client library
   const google = require('googleapis');
   const cloudkms = google.cloudkms({
-    version: 'v1',
-    auth: authClient
+    version: 'v1'
   });
 
   callback(null, cloudkms);
