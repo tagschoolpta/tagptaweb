@@ -1,6 +1,6 @@
 
 const credentials = {
-  "name": "projects/tag-school-pta/locations/global/keyRings/master/cryptoKeys/secrets/cryptoKeyVersions/1",
+  "name": "projects/tag-school-pta/locations/global/keyRings/master/cryptoKeys/secrets",
   "ciphertext": "CiQA6894rxeOpmdknSmMt+Gn2RwexEYQJbvxDWwOkj2qRWJ0PmQSwAEALrBm8uyHgK4V1KohwELZkUAOCE4zeUh+6dpTv1D/49UgNH3iL7oi4VCEAi5zOheLYvJAf697o1hc2M0XtQA7TEWo+DBOzMsLovPpS0K0c4a9IaX09RRPPVcRElxwA6itUW3ZC8jDq431dQo4C5H4DzHQQsZhh7NrcufgS8FD0seA//jvxJu/caTaPQ5eD8frxo6uFlyOe81cu/U/Rs9axPOcV5tXQFaU0jp2stz0Gb0Z/BII17ieQ3JwP9nSYbE="
 }
 
