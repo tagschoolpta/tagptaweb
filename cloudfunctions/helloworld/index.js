@@ -12,6 +12,6 @@ exports.helloWorld = (req, res) => {
   } else {
     // Everything is okay.
     console.log(req.body.message);
-    res.status(200).send('Success: ' + req.body.message);
+    res.status(200).send('Success: \n' + req.body.message + '\n Headers: \n X-MC-KEY: ' + req.get('X-MC-KEY') + '\n X-AT-KEY: ' + req.get('X-AT-KEY'));
   }
 };
