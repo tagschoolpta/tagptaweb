@@ -32,39 +32,36 @@ mailchimp.get(endpoint,(err,results)=>{
     return;
   }
 
-  async.eachSeries (results.members, (member, acb) => {
+  var entities = [];
+
+  _.each (results.members, (member) => {
     console.log (member.id + " : " + member.email_address);
-    save(member, (err)=>{
-      if (err) {
-        return acb(err);
-      }
-    })
-  }, (err)=>{
-    if (err) res.status(500).send(err.message);
-    else res.status(200).send('Stored members');
-    return;
+    const key = datastore.key(["Member", member.id]);
+    delete member._links;
+    if (member.merge_fields && member.merge_fields.properties) {
+      _.mapKeys(member.merge_fields.properties, (value, key)=>{
+        member[key] = value;
+      })
+    }
+    delete member.merge_fields;
+
+    const entity = {
+      key: key,
+      data: member
+    };
+  
+    entities.push(entity)
+  });
+
+  return datastore.upsert(entities)
+  .then(() => {
+    res.status(200).send('Stored members');
   })
-  // res.status(200).send(JSON.stringify(results, null, 2));
+  .catch((err) => {
+    res.status(500).send(err.message);
+  });
 })
 
 
 };
 
-function save (member, cb) {
-  const key = datastore.key(["Member", member.id]);
-  const entity = {
-    key: key,
-    data: member
-  };
-  return datastore.save(entity)
-  .then(() => {
-    console.log(`Entity ${key.path.join('/')} saved.`);
-    return cb();
-  })
-  .catch((err) => {
-    console.error(err);
-    return cb(err);
-  });
-
-
-}
