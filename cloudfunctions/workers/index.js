@@ -36,8 +36,10 @@ exports.syncMailchimp = (req, res) => {
 
     var entities = [];
     var chunks = _.chunk(results.members, 20);
+    console.log ("Chunk count: " + chunks.length);
 
     async.eachSeries(chunks, (chunk, acb) => {
+      console.log ("Processing chunk");
       processChunk(chunk, acb);
     }, (err)=>{
       if (err) res.status(500).send(err.message);
@@ -47,7 +49,7 @@ exports.syncMailchimp = (req, res) => {
     })
 
     function processChunk(members, cb) {
-      _.each(results.members, (member) => {
+      _.each(members, (member) => {
         console.log(member.id + " : " + member.email_address);
         const key = datastore.key(["Member", member.id]);
         delete member._links;
