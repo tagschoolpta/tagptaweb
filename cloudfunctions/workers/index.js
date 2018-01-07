@@ -63,39 +63,41 @@ exports.syncMailchimp = (req, res) => {
       return;
     })
 
-    exports.processChunk = (event, cb) => {
-      var members = JSON.parse(event.data);
-      _.each(members, (member) => {
-        // console.log(member.id + " : " + member.email_address);
-        const key = datastore.key(["Member", member.id]);
-        delete member._links;
-        if (member.merge_fields) {
-          _.mapKeys(member.merge_fields, (value, key) => {
-            member[key] = value;
-          })
-        }
-        // delete member.merge_fields;
-
-        const entity = {
-          key: key,
-          data: member
-        };
-
-        entities.push(entity)
-      });
-
-      return datastore.upsert(entities)
-        .then(() => {
-          return cb();
-        })
-        .catch((err) => {
-          return cb(err);
-        });
-
-    }
 
   })
 };
+
+exports.processChunk = (event, cb) => {
+  var members = JSON.parse(event.data);
+  _.each(members, (member) => {
+    // console.log(member.id + " : " + member.email_address);
+    const key = datastore.key(["Member", member.id]);
+    delete member._links;
+    if (member.merge_fields) {
+      _.mapKeys(member.merge_fields, (value, key) => {
+        member[key] = value;
+      })
+    }
+    // delete member.merge_fields;
+
+    const entity = {
+      key: key,
+      data: member
+    };
+
+    entities.push(entity)
+  });
+
+  return datastore.upsert(entities)
+    .then(() => {
+      return cb();
+    })
+    .catch((err) => {
+      return cb(err);
+    });
+
+}
+
 
 
 
