@@ -38,8 +38,8 @@ mailchimp.get(endpoint,(err,results)=>{
     console.log (member.id + " : " + member.email_address);
     const key = datastore.key(["Member", member.id]);
     delete member._links;
-    if (member.merge_fields && member.merge_fields.properties) {
-      _.mapKeys(member.merge_fields.properties, (value, key)=>{
+    if (member.merge_fields) {
+      _.mapKeys(member.merge_fields, (value, key)=>{
         member[key] = value;
       })
     }
