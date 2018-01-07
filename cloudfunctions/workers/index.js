@@ -2,6 +2,10 @@ var _ = require("lodash");
 var async = require("async");
 const Datastore = require('@google-cloud/datastore');
 const datastore = Datastore();
+
+const PubSub = require(`@google-cloud/pubsub`);
+const pubsub = PubSub();
+
 var processed  = 0;
 /**
  * Responds to any HTTP request that can provide a "message" field in the body.
@@ -36,12 +40,22 @@ exports.syncMailchimp = (req, res) => {
 
     var entities = [];
     var chunks = _.chunk(results.members, 20);
+    const topic = pubsub.topic("mailchimp-chunk");
+    const publisher = topic.publisher();
+
     console.log ("Chunk count: " + chunks.length);
 
     async.eachSeries(chunks, (chunk, acb) => {
-      processed += chunk.length;
-      console.log ("Processing chunk upto # "+ processed);
-      processChunk(chunk, acb);
+
+      return publisher.publish(JSON.stringify(chunk)).then(results => {
+        const messageId = results;
+        processed += chunk.length;
+        console.log ("Queued chunk upto # "+ processed + " Message ID: " + messageId);
+    
+        return acb();
+      });
+    
+      // processChunk(chunk, acb);
     }, (err)=>{
       if (err) res.status(500).send(err.message);
       else res.status(200).send('Stored members');
@@ -49,7 +63,8 @@ exports.syncMailchimp = (req, res) => {
       return;
     })
 
-    function processChunk(members, cb) {
+    exports.processChunk = (event, cb) => {
+      var members = JSON.parse(event.data);
       _.each(members, (member) => {
         // console.log(member.id + " : " + member.email_address);
         const key = datastore.key(["Member", member.id]);
