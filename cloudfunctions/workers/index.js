@@ -1,3 +1,4 @@
+var _ = require("lodash");
 /**
  * Responds to any HTTP request that can provide a "message" field in the body.
  *
@@ -26,7 +27,10 @@ mailchimp.get(endpoint,(err,results)=>{
     res.status(500).send('Error calling MC');
     return;
   }
-  console.log (JSON.stringify(results));
+
+  _.each (results.members, (member) => {
+    console.log (member.id + " : " + member.email_address);
+  })
   res.status(200).send(JSON.stringify(results, null, 2));
 })
 
