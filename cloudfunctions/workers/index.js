@@ -25,43 +25,58 @@ exports.syncMailchimp = (req, res) => {
 
   var listId = "d8395a2829";
   var endpoint = "/lists/" + listId + "/members?count=1000";
+
   mailchimp.get(endpoint, (err, results) => {
     if (err) {
       console.log(err);
-      res.status(500).send('Error calling MC'); 
+      res.status(500).send('Error calling MC');
       return;
     }
 
     var entities = [];
+    var chunks = _.chunk(result.members, 20);
 
-    _.each(results.members, (member) => {
-      console.log(member.id + " : " + member.email_address);
-      const key = datastore.key(["Member", member.id]);
-      delete member._links;
-      if (member.merge_fields) {
-        _.mapKeys(member.merge_fields, (value, key) => {
-          member[key] = value;
-        })
-      }
-      // delete member.merge_fields;
+    async.eachSeries(chunks, (chunk, acb) => {
+      processChunk(chunk, acb);
+    }, (err)=>{
+      if (err) res.status(500).send(err.message);
+      else res.status(200).send('Stored members');
 
-      const entity = {
-        key: key,
-        data: member
-      };
+      return;
+    })
 
-      entities.push(entity)
-    });
+    function processChunk(members, cb) {
+      _.each(results.members, (member) => {
+        console.log(member.id + " : " + member.email_address);
+        const key = datastore.key(["Member", member.id]);
+        delete member._links;
+        if (member.merge_fields) {
+          _.mapKeys(member.merge_fields, (value, key) => {
+            member[key] = value;
+          })
+        }
+        // delete member.merge_fields;
 
-    return datastore.upsert(entities)
-      .then(() => {
-        res.status(200).send('Stored members');
-      })
-      .catch((err) => {
-        res.status(500).send(err.message);
+        const entity = {
+          key: key,
+          data: member
+        };
+
+        entities.push(entity)
       });
+
+      return datastore.upsert(entities)
+        .then(() => {
+          return cb();
+        })
+        .catch((err) => {
+          return cb(err);
+        });
+
+    }
+
   })
 };
 
- 
+
 
