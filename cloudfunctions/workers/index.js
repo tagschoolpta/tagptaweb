@@ -43,7 +43,7 @@ mailchimp.get(endpoint,(err,results)=>{
         member[key] = value;
       })
     }
-    delete member.merge_fields;
+    // delete member.merge_fields;
 
     const entity = {
       key: key,
