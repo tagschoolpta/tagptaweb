@@ -51,7 +51,7 @@ exports.syncMailchimp = (req, res) => {
 
     function processChunk(members, cb) {
       _.each(members, (member) => {
-        console.log(member.id + " : " + member.email_address);
+        // console.log(member.id + " : " + member.email_address);
         const key = datastore.key(["Member", member.id]);
         delete member._links;
         if (member.merge_fields) {
