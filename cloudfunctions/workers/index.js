@@ -6,6 +6,9 @@ const datastore = Datastore();
 const PubSub = require(`@google-cloud/pubsub`);
 const pubsub = PubSub();
 
+const Buffer = require('safe-buffer').Buffer;
+
+
 var processed  = 0;
 /**
  * Responds to any HTTP request that can provide a "message" field in the body.
@@ -47,7 +50,8 @@ exports.syncMailchimp = (req, res) => {
 
     async.eachSeries(chunks, (chunk, acb) => {
 
-      return publisher.publish(JSON.stringify(chunk)).then(results => {
+      var msg = Buffer.from(JSON.stringify(chunk));
+      return publisher.publish(msg).then(results => {
         const messageId = results;
         processed += chunk.length;
         console.log ("Queued chunk upto # "+ processed + " Message ID: " + messageId);
@@ -68,7 +72,7 @@ exports.syncMailchimp = (req, res) => {
 };
 
 exports.processChunk = (event, cb) => {
-  var members = JSON.parse(event.data);
+  var members = JSON.parse(Buffer.from(event.data).toString());
   _.each(members, (member) => {
     // console.log(member.id + " : " + member.email_address);
     const key = datastore.key(["Member", member.id]);
