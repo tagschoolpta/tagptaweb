@@ -1,4 +1,8 @@
 var _ = require("lodash");
+var async = require("async");
+const Datastore = require('@google-cloud/datastore');
+const datastore = Datastore();
+
 /**
  * Responds to any HTTP request that can provide a "message" field in the body.
  *
@@ -28,8 +32,17 @@ mailchimp.get(endpoint,(err,results)=>{
     return;
   }
 
-  _.each (results.members, (member) => {
+  async.eachSeries (results.members, (member, acb) => {
     console.log (member.id + " : " + member.email_address);
+    save(member, (err)=>{
+      if (err) {
+        return acb(err);
+      }
+    })
+  }, (err)=>{
+    if (err) res.status(500).send(err.message);
+    else res.status(200).send('Stored members');
+    return;
   })
   res.status(200).send(JSON.stringify(results, null, 2));
 })
@@ -37,6 +50,21 @@ mailchimp.get(endpoint,(err,results)=>{
 
 };
 
-function save (data) {
+function save (member, cb) {
+  const key = datastore.key(["Member", member.id]);
+  const entity = {
+    key: key,
+    data: member
+  };
+  return datastore.save(entity)
+  .then(() => {
+    console.log(`Entity ${key.path.join('/')} saved.`);
+    return cb();
+  })
+  .catch((err) => {
+    console.error(err);
+    return cb(err);
+  });
+
 
 }
