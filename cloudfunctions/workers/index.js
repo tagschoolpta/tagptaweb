@@ -44,7 +44,7 @@ mailchimp.get(endpoint,(err,results)=>{
     else res.status(200).send('Stored members');
     return;
   })
-  res.status(200).send(JSON.stringify(results, null, 2));
+  // res.status(200).send(JSON.stringify(results, null, 2));
 })
 
 
