@@ -32,9 +32,10 @@ exports.syncMailchimp = (req, res) => {
       res.status(500).send('Error calling MC');
       return;
     }
+    console.log ("Retrieved from Mailchimp");
 
     var entities = [];
-    var chunks = _.chunk(result.members, 20);
+    var chunks = _.chunk(results.members, 20);
 
     async.eachSeries(chunks, (chunk, acb) => {
       processChunk(chunk, acb);
