@@ -10,58 +10,58 @@ const datastore = Datastore();
  * @param {!Object} res Cloud Function response context.
  */
 exports.syncMailchimp = (req, res) => {
-  if (req.method.toLowerCase() != 'post'){
+  if (req.method.toLowerCase() != 'post') {
     res.status(400).send('Use POST method');
     return;
   }
   var apikey = req.get('X-MC-KEY');
-  if (!apikey){
+  if (!apikey) {
     res.status(403).send('No MC Key specified!');
     return;
   }
 
-var MailchimpApi = require('mailchimp-api-v3');
-var mailchimp = new MailchimpApi(apikey);
+  var MailchimpApi = require('mailchimp-api-v3');
+  var mailchimp = new MailchimpApi(apikey);
 
-var listId = "d8395a2829";
-var endpoint = "/lists/" + listId +"/members";
-mailchimp.get(endpoint,(err,results)=>{
-  if (err) {
-    console.log(err);
-    res.status(500).send('Error calling MC');
-    return;
-  }
-
-  var entities = [];
-
-  _.each (results.members, (member) => {
-    console.log (member.id + " : " + member.email_address);
-    const key = datastore.key(["Member", member.id]);
-    delete member._links;
-    if (member.merge_fields) {
-      _.mapKeys(member.merge_fields, (value, key)=>{
-        member[key] = value;
-      })
+  var listId = "d8395a2829";
+  var endpoint = "/lists/" + listId + "/members?count=1000";
+  mailchimp.get(endpoint, (err, results) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error calling MC'); 
+      return;
     }
-    // delete member.merge_fields;
 
-    const entity = {
-      key: key,
-      data: member
-    };
-  
-    entities.push(entity)
-  });
+    var entities = [];
 
-  return datastore.upsert(entities)
-  .then(() => {
-    res.status(200).send('Stored members');
+    _.each(results.members, (member) => {
+      console.log(member.id + " : " + member.email_address);
+      const key = datastore.key(["Member", member.id]);
+      delete member._links;
+      if (member.merge_fields) {
+        _.mapKeys(member.merge_fields, (value, key) => {
+          member[key] = value;
+        })
+      }
+      // delete member.merge_fields;
+
+      const entity = {
+        key: key,
+        data: member
+      };
+
+      entities.push(entity)
+    });
+
+    return datastore.upsert(entities)
+      .then(() => {
+        res.status(200).send('Stored members');
+      })
+      .catch((err) => {
+        res.status(500).send(err.message);
+      });
   })
-  .catch((err) => {
-    res.status(500).send(err.message);
-  });
-})
-
-
 };
+
+ 
 
