@@ -2,7 +2,7 @@ var _ = require("lodash");
 var async = require("async");
 const Datastore = require('@google-cloud/datastore');
 const datastore = Datastore();
-
+var processed  = 0;
 /**
  * Responds to any HTTP request that can provide a "message" field in the body.
  *
@@ -39,7 +39,8 @@ exports.syncMailchimp = (req, res) => {
     console.log ("Chunk count: " + chunks.length);
 
     async.eachSeries(chunks, (chunk, acb) => {
-      console.log ("Processing chunk");
+      processed += chunk.length;
+      console.log ("Processing chunk upto # "+ processed);
       processChunk(chunk, acb);
     }, (err)=>{
       if (err) res.status(500).send(err.message);
