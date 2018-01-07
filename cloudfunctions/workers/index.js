@@ -16,7 +16,7 @@ exports.syncMailchimp = (req, res) => {
   }
 
 var MailchimpApi = require('mailchimp-api-v3');
-var mailchimp = new MailchimpApi(api_key);
+var mailchimp = new MailchimpApi(apikey);
 mailchimp.get('/lists',(results)=>{
   res.status(200).send(JSON.stringify(results));
 })
